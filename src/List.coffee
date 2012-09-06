@@ -3,7 +3,7 @@ class List
 	constructor: (data) ->
 		@data = data
 
-	# Filter group by given filter param
+	# Filter group by given filters param
 	groupsBy: (filters) ->
 
 		groups = []

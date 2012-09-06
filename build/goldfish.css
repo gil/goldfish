@@ -42,7 +42,7 @@ body {
 	padding: 5px;
 }
 
-.entry-row:hover {
+.entry-row:hover, .active-entry {
 	background-color: #EAEAEA;
 }
 

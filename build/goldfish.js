@@ -1,5 +1,5 @@
 /*
-* Goldfish v0.0.1 - 2012-09-05 - https://github.com/gil/goldfish
+* Goldfish v0.0.1 - 2012-09-06 - https://github.com/gil/goldfish
 * by André Gil (http://andregil.net/)
 *
 * Licensed under:
@@ -104,7 +104,8 @@ Goldfish = (function() {
   };
 
   Goldfish.addList = function(data) {
-    return this.listManager.addList(data);
+    this.listManager.addList(data);
+    return this.preventSearch = false;
   };
 
   Goldfish._readElements = function() {
@@ -121,42 +122,113 @@ Goldfish = (function() {
     this.listManager = new ListManager();
     this.listManager.loadLists();
     this._readElements();
-    this.$searchInput.on("keyup", this._search).focus();
+    this.$searchInput.on("keydown", this._handleKeys).on("keyup", this._search).focus();
     this.$searchInput.val(" ");
     return setTimeout(function() {
       return _this._search();
     }, 300);
   };
 
+  Goldfish._handleKeys = function(e) {
+    var key;
+    key = e.keyCode || e.which;
+    switch (key) {
+      case 40:
+      case 39:
+        Goldfish._keyboardNavigate(e, "next");
+        break;
+      case 38:
+      case 37:
+        Goldfish._keyboardNavigate(e, "prev");
+        break;
+      case 13:
+        Goldfish._openActiveEntry();
+        break;
+      default:
+        return;
+    }
+    Goldfish.preventSearch = true;
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  };
+
+  Goldfish._keyboardNavigate = function(e, direction) {
+    var currentActive, jumpGroup, nextActive, nodeToSelect;
+    jumpGroup = e.ctrlKey || e.metaKey;
+    nodeToSelect = direction === "next" ? "first" : "last";
+    currentActive = $(".active-entry").removeClass("active-entry");
+    nextActive = null;
+    if (currentActive.length > 0) {
+      nextActive = currentActive[direction](".entry-row");
+      if (jumpGroup || nextActive.length === 0) {
+        nextActive = currentActive.parents(".group-row")[direction](".group-row").find(".entry-row")[nodeToSelect]();
+      }
+      nextActive.addClass("active-entry");
+    } else {
+      nextActive = $(".entry-row")[nodeToSelect]().addClass("active-entry");
+    }
+    return this._scrollToActive(nextActive);
+  };
+
+  Goldfish._scrollToActive = function(activeEntry) {
+    var activeHeight, activeTop, bodyScroll, windowHeight;
+    if (activeEntry.length > 0) {
+      activeTop = activeEntry.offset().top;
+      activeHeight = activeEntry.height();
+      windowHeight = $(window).height();
+      bodyScroll = $('body').scrollTop();
+      if (activeTop > windowHeight + bodyScroll) {
+        bodyScroll = activeTop - 10;
+      } else if (activeTop < bodyScroll) {
+        bodyScroll = activeTop - windowHeight + activeHeight + 20;
+      }
+      return $('body').stop().animate({
+        scrollTop: bodyScroll
+      }, 300);
+    }
+  };
+
+  Goldfish._openActiveEntry = function() {
+    var activeEntryData;
+    activeEntryData = $(".active-entry").data("entry");
+    if (activeEntryData && activeEntryData.url) {
+      return window.open(activeEntryData.url, "_blank");
+    }
+  };
+
   Goldfish._search = function(e) {
     var entry, entryEl, entryTemplate, group, groupEl, groupTemplate, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
-    $(".group-row").remove();
-    searchFilters = Goldfish.$searchInput.val().trim().split(" ");
-    groupTemplate = _.template($("#group-template").html());
-    entryTemplate = _.template($("#entry-template").html());
-    if (searchFilters.length > 0) {
-      _ref = Goldfish.listManager.search(searchFilters);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        group = _ref[_i];
-        groupEl = $(groupTemplate({
-          group: group
-        }));
-        _ref1 = group.entries;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          entry = _ref1[_j];
-          entryEl = $(entryTemplate({
-            entry: entry
+    if (!Goldfish.preventSearch) {
+      $(".group-row").remove();
+      searchFilters = Goldfish.$searchInput.val().trim().split(" ");
+      groupTemplate = _.template($("#group-template").html());
+      entryTemplate = _.template($("#entry-template").html());
+      if (searchFilters.length > 0) {
+        _ref = Goldfish.listManager.search(searchFilters);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          group = _ref[_i];
+          groupEl = $(groupTemplate({
+            group: group
           }));
-          entryEl.data("entry", entry);
-          groupEl.append(entryEl);
+          _ref1 = group.entries;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            entry = _ref1[_j];
+            entryEl = $(entryTemplate({
+              entry: entry
+            }));
+            entryEl.data("entry", entry);
+            groupEl.append(entryEl);
+          }
+          $(document.body).append(groupEl);
         }
-        $(document.body).append(groupEl);
       }
+      return $(".entry-row").on("click", function(e) {
+        return window.open($(e.currentTarget).data("entry").url, "_blank");
+      });
+    } else {
+      return Goldfish.preventSearch = false;
     }
-    $(".entry-row").on("click", function(e) {
-      return window.open($(e.currentTarget).data("entry").url, "_blank");
-    });
-    return searchFilters;
   };
 
   return Goldfish;
