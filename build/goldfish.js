@@ -14,20 +14,27 @@ List = (function() {
     this.data = data;
   }
 
-  List.prototype.groupsBy = function(filter) {
-    var filteredEntries, group, groupCopy, groups, matches, _i, _len, _ref,
+  List.prototype.groupsBy = function(filters) {
+    var filteredEntries, group, groupCopy, groups, i, _i, _j, _len, _ref, _ref1,
       _this = this;
     groups = [];
-    filter = $.trim(filter.toLowerCase());
-    matches = function(field) {
-      return field.toLowerCase().indexOf(filter) > -1;
-    };
-    _ref = this.data.groups;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      group = _ref[_i];
+    for (i = _i = 0, _ref = filters.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+      filters[i] = filters[i].toLowerCase();
+    }
+    _ref1 = this.data.groups;
+    for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
+      group = _ref1[_j];
       group.list = this.data;
       filteredEntries = _.filter(group.entries, function(entry) {
-        return matches(group.name) || matches(entry.name) || matches(entry.description);
+        var fields, filter, _k, _len1;
+        fields = [group.list.name, group.name, entry.name, entry.description].join(" ").toLowerCase();
+        for (_k = 0, _len1 = filters.length; _k < _len1; _k++) {
+          filter = filters[_k];
+          if (fields.indexOf(filter) < 0) {
+            return false;
+          }
+        }
+        return true;
       });
       if (filteredEntries.length > 0) {
         groupCopy = _.clone(group);
@@ -71,13 +78,13 @@ ListManager = (function() {
     return this.listsData.push(new List(listData));
   };
 
-  ListManager.prototype.search = function(filter) {
+  ListManager.prototype.search = function(filters) {
     var groups, listData, _i, _len, _ref;
     groups = [];
     _ref = this.listsData;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       listData = _ref[_i];
-      groups = groups.concat(listData.groupsBy(filter));
+      groups = groups.concat(listData.groupsBy(filters));
     }
     return groups;
   };
@@ -122,13 +129,13 @@ Goldfish = (function() {
   };
 
   Goldfish._search = function(e) {
-    var entry, entryEl, entryTemplate, group, groupEl, groupTemplate, searchFilter, _i, _j, _len, _len1, _ref, _ref1;
+    var entry, entryEl, entryTemplate, group, groupEl, groupTemplate, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
     $(".group-row").remove();
-    searchFilter = Goldfish.$searchInput.val();
+    searchFilters = Goldfish.$searchInput.val().trim().split(" ");
     groupTemplate = _.template($("#group-template").html());
     entryTemplate = _.template($("#entry-template").html());
-    if (searchFilter.length > 0) {
-      _ref = Goldfish.listManager.search(searchFilter);
+    if (searchFilters.length > 0) {
+      _ref = Goldfish.listManager.search(searchFilters);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         group = _ref[_i];
         groupEl = $(groupTemplate({
@@ -149,7 +156,7 @@ Goldfish = (function() {
     $(".entry-row").on("click", function(e) {
       return window.open($(e.currentTarget).data("entry").url, "_blank");
     });
-    return searchFilter;
+    return searchFilters;
   };
 
   return Goldfish;

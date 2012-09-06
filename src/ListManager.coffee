@@ -22,10 +22,10 @@ class ListManager
 		@listsData.push new List(listData)
 
 	# Search for entries
-	search: (filter) ->
+	search: (filters) ->
 		groups = []
 
 		for listData in @listsData
-			groups = groups.concat( listData.groupsBy(filter) )
+			groups = groups.concat( listData.groupsBy(filters) )
 
 		groups

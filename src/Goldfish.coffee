@@ -34,13 +34,13 @@ class Goldfish
 	@_search: (e) =>
 		# key = e.keyCode or e.which
 		$(".group-row").remove()
-		searchFilter = @$searchInput.val()
+		searchFilters = @$searchInput.val().trim().split(" ")
 
 		groupTemplate = _.template( $("#group-template").html() )
 		entryTemplate = _.template( $("#entry-template").html() )
 
-		if searchFilter.length > 0
-			for group in @listManager.search( searchFilter )
+		if searchFilters.length > 0
+			for group in @listManager.search( searchFilters )
 				groupEl = $( groupTemplate({ group: group }) )
 
 				for entry in group.entries
@@ -53,7 +53,7 @@ class Goldfish
 		$(".entry-row").on "click", (e) ->
 			window.open $(e.currentTarget).data("entry").url, "_blank"
 
-		searchFilter
+		searchFilters
 
 $ ->
 	window.Goldfish = Goldfish;
