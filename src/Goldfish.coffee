@@ -37,9 +37,9 @@ class Goldfish
 		key = e.keyCode or e.which
 
 		switch key
-			when 40, 39 # key down / right
+			when 40 # key down
 				@_keyboardNavigate(e, "next")
-			when 38, 37 # key up / left
+			when 38 # key up
 				@_keyboardNavigate(e, "prev")
 			when 13 # enter key
 				@_openActiveEntry()

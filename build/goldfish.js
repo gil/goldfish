@@ -134,11 +134,9 @@ Goldfish = (function() {
     key = e.keyCode || e.which;
     switch (key) {
       case 40:
-      case 39:
         Goldfish._keyboardNavigate(e, "next");
         break;
       case 38:
-      case 37:
         Goldfish._keyboardNavigate(e, "prev");
         break;
       case 13:
