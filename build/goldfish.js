@@ -118,15 +118,10 @@ Goldfish = (function() {
   };
 
   Goldfish.start = function() {
-    var _this = this;
     this.listManager = new ListManager();
     this.listManager.loadLists();
     this._readElements();
-    this.$searchInput.on("keydown", this._handleKeys).on("keyup", this._search).focus();
-    this.$searchInput.val(" ");
-    return setTimeout(function() {
-      return _this._search();
-    }, 300);
+    return this.$searchInput.on("keydown", this._handleKeys).on("keyup", this._search).focus();
   };
 
   Goldfish._handleKeys = function(e) {
@@ -196,14 +191,15 @@ Goldfish = (function() {
   };
 
   Goldfish._search = function(e) {
-    var entry, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
+    var entry, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, searchText, _i, _j, _len, _len1, _ref, _ref1;
     if (!Goldfish.preventSearch) {
       $(".group-row").remove();
-      searchFilters = Goldfish.$searchInput.val().trim().split(" ");
-      highlighter = Goldfish._getHighlighter(searchFilters);
-      groupTemplate = _.template($("#group-template").html());
-      entryTemplate = _.template($("#entry-template").html());
-      if (searchFilters.length > 0) {
+      searchText = Goldfish.$searchInput.val().trim();
+      searchFilters = searchText.split(" ");
+      if (searchFilters.length > 0 && searchText !== "") {
+        highlighter = Goldfish._getHighlighter(searchFilters);
+        groupTemplate = _.template($("#group-template").html());
+        entryTemplate = _.template($("#entry-template").html());
         _ref = Goldfish.listManager.search(searchFilters);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           group = _ref[_i];

@@ -27,10 +27,10 @@ class Goldfish
 			.focus()
 
 		# TODO: Remove temporary auto search
-		@$searchInput.val(" ");
-		setTimeout =>
-			@_search();
-		, 300
+		# @$searchInput.val(" ");
+		# setTimeout =>
+		# 	@_search();
+		# , 300
 
 	# Handle keyboard navigation
 	@_handleKeys: (e) =>
@@ -115,13 +115,15 @@ class Goldfish
 		if not @preventSearch
 
 			$(".group-row").remove()
-			searchFilters = @$searchInput.val().trim().split(" ")
-			highlighter = @_getHighlighter( searchFilters )
+			searchText = @$searchInput.val().trim()
+			searchFilters = searchText.split(" ")
 
-			groupTemplate = _.template( $("#group-template").html() )
-			entryTemplate = _.template( $("#entry-template").html() )
+			if searchFilters.length > 0 and searchText isnt ""
 
-			if searchFilters.length > 0
+				highlighter = @_getHighlighter( searchFilters )
+				groupTemplate = _.template( $("#group-template").html() )
+				entryTemplate = _.template( $("#entry-template").html() )
+
 				for group in @listManager.search( searchFilters )
 					groupEl = $( groupTemplate({
 									group: group,
