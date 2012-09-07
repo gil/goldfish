@@ -11,7 +11,15 @@ var List;
 List = (function() {
 
   function List(data) {
+    var group, _i, _len, _ref;
     this.data = data;
+    this.groupCount = this.data.groups.length;
+    this.entryCount = 0;
+    _ref = this.data.groups;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      group = _ref[_i];
+      this.entryCount += group.entries.length;
+    }
   }
 
   List.prototype.groupsBy = function(filters) {
@@ -103,9 +111,11 @@ Goldfish = (function() {
     searchInput: ".search-input"
   };
 
+  Goldfish.preventSearch = false;
+
   Goldfish.addList = function(data) {
     this.listManager.addList(data);
-    return this.preventSearch = false;
+    return this._renderLists();
   };
 
   Goldfish._readElements = function() {
@@ -121,7 +131,7 @@ Goldfish = (function() {
     this.listManager = new ListManager();
     this.listManager.loadLists();
     this._readElements();
-    return this.$searchInput.on("keydown", this._handleKeys).on("keyup", this._search).focus();
+    return this.$searchInput.on("keydown", this._handleKeys).on("keyup", this._handleSearch).focus();
   };
 
   Goldfish._handleKeys = function(e) {
@@ -190,40 +200,69 @@ Goldfish = (function() {
     }
   };
 
-  Goldfish._search = function(e) {
-    var entry, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, searchText, _i, _j, _len, _len1, _ref, _ref1;
-    if (!Goldfish.preventSearch) {
-      $(".group-row").remove();
-      searchText = Goldfish.$searchInput.val().trim();
+  Goldfish._clearScreen = function() {
+    return $(".group-row, .list-row").remove();
+  };
+
+  Goldfish._handleSearch = function(e) {
+    var searchText;
+    searchText = Goldfish.$searchInput.val().trim();
+    if (searchText !== "") {
+      return Goldfish._search(searchText);
+    } else {
+      return Goldfish._renderLists();
+    }
+  };
+
+  Goldfish._search = function(searchText) {
+    var entry, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
+    if (!this.preventSearch) {
+      this._clearScreen();
       searchFilters = searchText.split(" ");
-      if (searchFilters.length > 0 && searchText !== "") {
-        highlighter = Goldfish._getHighlighter(searchFilters);
-        groupTemplate = _.template($("#group-template").html());
-        entryTemplate = _.template($("#entry-template").html());
-        _ref = Goldfish.listManager.search(searchFilters);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          group = _ref[_i];
-          groupEl = $(groupTemplate({
-            group: group,
+      highlighter = this._getHighlighter(searchFilters);
+      groupTemplate = _.template($("#group-template").html());
+      entryTemplate = _.template($("#entry-template").html());
+      _ref = this.listManager.search(searchFilters);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        group = _ref[_i];
+        groupEl = $(groupTemplate({
+          group: group,
+          highlighter: highlighter
+        }));
+        _ref1 = group.entries;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          entry = _ref1[_j];
+          $(entryTemplate({
+            entry: entry,
             highlighter: highlighter
-          }));
-          _ref1 = group.entries;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            entry = _ref1[_j];
-            $(entryTemplate({
-              entry: entry,
-              highlighter: highlighter
-            })).data("entry", entry).appendTo(groupEl);
-          }
-          $(document.body).append(groupEl);
+          })).data("entry", entry).appendTo(groupEl);
         }
+        $(document.body).append(groupEl);
       }
       return $(".entry-row").on("click", function(e) {
         return window.open($(e.currentTarget).data("entry").url, "_blank");
       });
     } else {
-      return Goldfish.preventSearch = false;
+      return this.preventSearch = false;
     }
+  };
+
+  Goldfish._renderLists = function() {
+    var list, listEl, listTemplate, _i, _len, _ref, _results;
+    this._clearScreen();
+    listTemplate = _.template($("#list-template").html());
+    _ref = this.listManager.listsData;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      list = _ref[_i];
+      listEl = $(listTemplate({
+        name: list.data.name,
+        entryCount: list.entryCount,
+        groupCount: list.groupCount
+      }));
+      _results.push($(document.body).append(listEl));
+    }
+    return _results;
   };
 
   Goldfish._getHighlighter = function(filters) {

@@ -15,6 +15,24 @@ body {
 	font-size: 20px;
 }
 
+/* List */
+
+.list-row {
+	color: #333333;
+	background-color: #EAEAEA;
+	font-size: 17px;
+	padding: 5px;
+	margin: 0px 0px 10px 0px;
+}
+
+.list-name {
+	margin: 0px;
+}
+
+.list-description {
+	margin: 0px;
+}
+
 /* Group */
 
 .group-row {

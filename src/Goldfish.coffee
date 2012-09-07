@@ -4,10 +4,12 @@ class Goldfish
 		searchInput : ".search-input"
 	}
 
+	@preventSearch = false
+
 	# Add a new list
 	@addList: (data) ->
 		@listManager.addList data
-		@preventSearch = false
+		@_renderLists()
 
 	# Perform jQuery selectors to read screen elements
 	@_readElements: ->
@@ -23,7 +25,7 @@ class Goldfish
 
 		@$searchInput
 			.on("keydown", @_handleKeys)
-			.on("keyup", @_search)
+			.on("keyup", @_handleSearch)
 			.focus()
 
 		# TODO: Remove temporary auto search
@@ -110,41 +112,66 @@ class Goldfish
 		if activeEntryData and activeEntryData.url
 			window.open activeEntryData.url, "_blank"
 
+	# Remove all lists, groups and entries
+	@_clearScreen: ->
+		$(".group-row, .list-row").remove()
+
+	# Handle search on text input
+	@_handleSearch: (e) =>
+		searchText = @$searchInput.val().trim()
+
+		if searchText isnt ""
+			@_search searchText
+		else
+			@_renderLists()
+
 	# Do search
-	@_search: (e) =>
+	@_search: (searchText) ->
 		if not @preventSearch
 
-			$(".group-row").remove()
-			searchText = @$searchInput.val().trim()
+			@_clearScreen()
+
 			searchFilters = searchText.split(" ")
+			highlighter = @_getHighlighter( searchFilters )
 
-			if searchFilters.length > 0 and searchText isnt ""
+			groupTemplate = _.template( $("#group-template").html() )
+			entryTemplate = _.template( $("#entry-template").html() )
 
-				highlighter = @_getHighlighter( searchFilters )
-				groupTemplate = _.template( $("#group-template").html() )
-				entryTemplate = _.template( $("#entry-template").html() )
+			for group in @listManager.search( searchFilters )
+				groupEl = $( groupTemplate({
+								group: group,
+								highlighter: highlighter
+							}) )
 
-				for group in @listManager.search( searchFilters )
-					groupEl = $( groupTemplate({
-									group: group,
-									highlighter: highlighter
-								}) )
+				for entry in group.entries
+					$( entryTemplate({
+						entry: entry,
+						highlighter: highlighter
+					}) )
+					.data( "entry", entry )
+					.appendTo( groupEl )
 
-					for entry in group.entries
-						$( entryTemplate({
-							entry: entry,
-							highlighter: highlighter
-						}) )
-						.data( "entry", entry )
-						.appendTo( groupEl )
-
-					$(document.body).append( groupEl )
+				$(document.body).append( groupEl )
 
 			$(".entry-row").on "click", (e) ->
 				window.open $(e.currentTarget).data("entry").url, "_blank"
 
 		else
 			@preventSearch = false
+
+	# Render lists data on screen
+	@_renderLists: ->
+		@_clearScreen()
+		listTemplate = _.template( $("#list-template").html() )
+
+		for list in @listManager.listsData
+			listEl = $( listTemplate({
+				name: list.data.name,
+				entryCount: list.entryCount,
+				groupCount: list.groupCount
+			}) )
+
+			$(document.body).append( listEl )
 
 	# Return a highlighter function, based on given filters
 	@_getHighlighter: (filters) ->

@@ -3,6 +3,12 @@ class List
 	constructor: (data) ->
 		@data = data
 
+		@groupCount = @data.groups.length
+		@entryCount = 0
+
+		for group in @data.groups
+			@entryCount += group.entries.length
+
 	# Filter group by given filters param
 	groupsBy: (filters) ->
 

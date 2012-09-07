@@ -11,6 +11,13 @@
 		<link href="vendor/normalize.css" rel="stylesheet" type="text/css" />
 		<link href="goldfish.css" rel="stylesheet" type="text/css" />
 
+		<script id="list-template" type="text/html">
+			<div class="list-row">
+				<h3 class="list-name"><%= name %></h3>
+				<p class="list-description"><%= entryCount %> entries in <%= groupCount %> categories.</p>
+			</div>
+		</script>
+
 		<script id="group-template" type="text/html">
 			<div class="group-row">
 				<h2 class="group-label"><%= highlighter( group.list.name ) %> :: <%= highlighter( group.name ) %></h2>
