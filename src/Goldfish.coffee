@@ -116,16 +116,24 @@ class Goldfish
 
 			$(".group-row").remove()
 			searchFilters = @$searchInput.val().trim().split(" ")
+			highlighter = @_getHighlighter( searchFilters )
 
 			groupTemplate = _.template( $("#group-template").html() )
 			entryTemplate = _.template( $("#entry-template").html() )
 
 			if searchFilters.length > 0
 				for group in @listManager.search( searchFilters )
-					groupEl = $( groupTemplate({ group: group }) )
+					groupEl = $( groupTemplate({
+									group: group,
+									highlighter: highlighter
+								}) )
 
 					for entry in group.entries
-						entryEl = $( entryTemplate({ entry: entry }) )
+						entryEl = $( entryTemplate({
+										entry: entry,
+										highlighter: highlighter
+									}) )
+
 						entryEl.data( "entry", entry )
 						groupEl.append( entryEl )
 
@@ -136,6 +144,14 @@ class Goldfish
 
 		else
 			@preventSearch = false
+
+	# Return a highlighter function, based on given filters
+	@_getHighlighter: (filters) ->
+		(text) ->
+			for filter in filters
+				if filter.length > 1
+					text = text.split( filter ).join( "<span class='highlight'>" + filter + "</span>" )
+			text
 
 $ ->
 	window.Goldfish = Goldfish;

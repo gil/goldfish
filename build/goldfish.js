@@ -196,10 +196,11 @@ Goldfish = (function() {
   };
 
   Goldfish._search = function(e) {
-    var entry, entryEl, entryTemplate, group, groupEl, groupTemplate, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
+    var entry, entryEl, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
     if (!Goldfish.preventSearch) {
       $(".group-row").remove();
       searchFilters = Goldfish.$searchInput.val().trim().split(" ");
+      highlighter = Goldfish._getHighlighter(searchFilters);
       groupTemplate = _.template($("#group-template").html());
       entryTemplate = _.template($("#entry-template").html());
       if (searchFilters.length > 0) {
@@ -207,13 +208,15 @@ Goldfish = (function() {
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           group = _ref[_i];
           groupEl = $(groupTemplate({
-            group: group
+            group: group,
+            highlighter: highlighter
           }));
           _ref1 = group.entries;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             entry = _ref1[_j];
             entryEl = $(entryTemplate({
-              entry: entry
+              entry: entry,
+              highlighter: highlighter
             }));
             entryEl.data("entry", entry);
             groupEl.append(entryEl);
@@ -227,6 +230,19 @@ Goldfish = (function() {
     } else {
       return Goldfish.preventSearch = false;
     }
+  };
+
+  Goldfish._getHighlighter = function(filters) {
+    return function(text) {
+      var filter, _i, _len;
+      for (_i = 0, _len = filters.length; _i < _len; _i++) {
+        filter = filters[_i];
+        if (filter.length > 1) {
+          text = text.split(filter).join("<span class='highlight'>" + filter + "</span>");
+        }
+      }
+      return text;
+    };
   };
 
   return Goldfish;

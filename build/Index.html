@@ -13,14 +13,14 @@
 
 		<script id="group-template" type="text/html">
 			<div class="group-row">
-				<h2 class="group-label"><%= group.list.name %> :: <%= group.name %></h2>
+				<h2 class="group-label"><%= highlighter( group.list.name ) %> :: <%= highlighter( group.name ) %></h2>
 			</div>
 		</script>
 
 		<script id="entry-template" type="text/html">
 			<div class="entry-row">
-				<h3 class="entry-name"><%= entry.name %></h3>
-				<p class="entry-description"><%= entry.description %></p>
+				<h3 class="entry-name"><%= highlighter( entry.name ) %></h3>
+				<p class="entry-description"><%= highlighter( entry.description ) %></p>
 			</div>
 		</script>
 

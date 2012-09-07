@@ -53,3 +53,8 @@ body {
 .entry-description {
 	margin: 10px 0px 0px 0px;
 }
+
+.highlight {
+	font-weight: bold;
+	color: #006699;
+}
