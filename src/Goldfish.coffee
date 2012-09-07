@@ -154,7 +154,10 @@ class Goldfish
 				$(document.body).append( groupEl )
 
 			$(".entry-row").on "click", (e) ->
-				window.open $(e.currentTarget).data("entry").url, "_blank"
+				url = $(e.currentTarget).data("entry").url
+
+				if url
+					window.open url, "_blank"
 
 		else
 			@preventSearch = false

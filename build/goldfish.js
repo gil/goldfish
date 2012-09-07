@@ -240,7 +240,11 @@ Goldfish = (function() {
         $(document.body).append(groupEl);
       }
       return $(".entry-row").on("click", function(e) {
-        return window.open($(e.currentTarget).data("entry").url, "_blank");
+        var url;
+        url = $(e.currentTarget).data("entry").url;
+        if (url) {
+          return window.open(url, "_blank");
+        }
       });
     } else {
       return this.preventSearch = false;
