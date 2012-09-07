@@ -176,7 +176,7 @@ Goldfish = (function() {
       activeHeight = activeEntry.height();
       windowHeight = $(window).height();
       bodyScroll = $('body').scrollTop();
-      if (activeTop > windowHeight + bodyScroll) {
+      if (activeTop + activeHeight > windowHeight + bodyScroll) {
         bodyScroll = activeTop - 10;
       } else if (activeTop < bodyScroll) {
         bodyScroll = activeTop - windowHeight + activeHeight + 20;

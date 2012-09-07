@@ -91,7 +91,7 @@ class Goldfish
 			windowHeight = $(window).height()
 			bodyScroll = $('body').scrollTop()
 
-			if activeTop > windowHeight + bodyScroll
+			if activeTop + activeHeight > windowHeight + bodyScroll
 				# Entry is below current screen scroll position
 				bodyScroll = activeTop - 10
 			else if activeTop < bodyScroll
