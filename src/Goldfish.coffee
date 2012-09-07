@@ -57,7 +57,7 @@ class Goldfish
 	@_keyboardNavigate: (e, direction) ->
 
 		jumpGroup = e.ctrlKey or e.metaKey
-		nodeToSelect = if direction is "next" then "first" else "last"
+		nodeToSelect = if direction is "next" or jumpGroup then "first" else "last"
 
 		# Remove selection from active entry
 		currentActive = $(".active-entry").removeClass("active-entry")

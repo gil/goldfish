@@ -154,7 +154,7 @@ Goldfish = (function() {
   Goldfish._keyboardNavigate = function(e, direction) {
     var currentActive, jumpGroup, nextActive, nodeToSelect;
     jumpGroup = e.ctrlKey || e.metaKey;
-    nodeToSelect = direction === "next" ? "first" : "last";
+    nodeToSelect = direction === "next" || jumpGroup ? "first" : "last";
     currentActive = $(".active-entry").removeClass("active-entry");
     nextActive = null;
     if (currentActive.length > 0) {
