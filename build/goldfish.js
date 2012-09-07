@@ -196,7 +196,7 @@ Goldfish = (function() {
   };
 
   Goldfish._search = function(e) {
-    var entry, entryEl, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
+    var entry, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
     if (!Goldfish.preventSearch) {
       $(".group-row").remove();
       searchFilters = Goldfish.$searchInput.val().trim().split(" ");
@@ -214,12 +214,10 @@ Goldfish = (function() {
           _ref1 = group.entries;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             entry = _ref1[_j];
-            entryEl = $(entryTemplate({
+            $(entryTemplate({
               entry: entry,
               highlighter: highlighter
-            }));
-            entryEl.data("entry", entry);
-            groupEl.append(entryEl);
+            })).data("entry", entry).appendTo(groupEl);
           }
           $(document.body).append(groupEl);
         }

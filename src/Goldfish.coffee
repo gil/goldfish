@@ -129,13 +129,12 @@ class Goldfish
 								}) )
 
 					for entry in group.entries
-						entryEl = $( entryTemplate({
-										entry: entry,
-										highlighter: highlighter
-									}) )
-
-						entryEl.data( "entry", entry )
-						groupEl.append( entryEl )
+						$( entryTemplate({
+							entry: entry,
+							highlighter: highlighter
+						}) )
+						.data( "entry", entry )
+						.appendTo( groupEl )
 
 					$(document.body).append( groupEl )
 
