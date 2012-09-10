@@ -1,10 +1,15 @@
 /*
-* Goldfish v0.0.1 - 2012-09-06 - https://github.com/gil/goldfish
+* Goldfish v0.0.1 - 2012-09-10 - https://github.com/gil/goldfish
 * by André Gil (http://andregil.net/)
 *
 * Licensed under:
 *    MIT - http://www.opensource.org/licenses/MIT
 */
+
+
+RegExp.escape = function(s) {
+  return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
 
 var List;
 
@@ -270,13 +275,19 @@ Goldfish = (function() {
   };
 
   Goldfish._getHighlighter = function(filters) {
+    var filter, filtersRegExp, _i, _len;
+    filtersRegExp = [];
+    for (_i = 0, _len = filters.length; _i < _len; _i++) {
+      filter = filters[_i];
+      if (filter.length > 1) {
+        filtersRegExp.push(new RegExp(RegExp.escape(filter), "gi"));
+      }
+    }
     return function(text) {
-      var filter, _i, _len;
-      for (_i = 0, _len = filters.length; _i < _len; _i++) {
-        filter = filters[_i];
-        if (filter.length > 1) {
-          text = text.split(filter).join("<span class='highlight'>" + filter + "</span>");
-        }
+      var regExp, _j, _len1;
+      for (_j = 0, _len1 = filtersRegExp.length; _j < _len1; _j++) {
+        regExp = filtersRegExp[_j];
+        text = text.replace(regExp, "<span class='highlight'>$&</span>");
       }
       return text;
     };

@@ -29,6 +29,7 @@ module.exports = function(grunt) {
 			build: {
 				src: [
 					"<banner>",
+					"build/tmp/Utils.js",
 					"build/tmp/List.js",
 					"build/tmp/ListManager.js",
 					"build/tmp/Goldfish.js"

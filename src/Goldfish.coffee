@@ -178,10 +178,16 @@ class Goldfish
 
 	# Return a highlighter function, based on given filters
 	@_getHighlighter: (filters) ->
+
+		filtersRegExp = []
+
+		for filter in filters
+			if filter.length > 1
+				filtersRegExp.push new RegExp( RegExp.escape(filter), "gi" )
+
 		(text) ->
-			for filter in filters
-				if filter.length > 1
-					text = text.split( filter ).join( "<span class='highlight'>" + filter + "</span>" )
+			for regExp in filtersRegExp
+				text = text.replace( regExp, "<span class='highlight'>$&</span>" )
 			text
 
 $ ->
