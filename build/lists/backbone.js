@@ -1,3 +1,4 @@
+// List extracted from: http://backbonejs.org/
 Goldfish.addList({
 	"name": "Backbone.js",
 	"groups": [

@@ -1,3 +1,4 @@
+// List extracted from: http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/
 Goldfish.addList({
 	"name": "Regular Expressions",
 	"groups": [

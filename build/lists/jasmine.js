@@ -1,3 +1,4 @@
+// List extracted from: https://github.com/pivotal/jasmine/wiki/Matchers
 Goldfish.addList({
 	"name": "Jasmine",
 	"groups": [

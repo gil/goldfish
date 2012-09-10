@@ -1,3 +1,4 @@
+// List extracted from: http://underscorejs.org/
 Goldfish.addList({
 	"name": "Underscore.js",
 	"groups": [

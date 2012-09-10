@@ -1,3 +1,4 @@
+// List extracted from: http://api.jquery.com
 Goldfish.addList({
 	"name": "jQuery",
 	"groups": [
