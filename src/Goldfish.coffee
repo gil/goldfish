@@ -23,8 +23,12 @@ class Goldfish
 
 		@_readElements()
 
-		@$searchInput
+		$(document)
 			.on("keydown", @_handleKeys)
+			.on "keydown", (e) =>
+				@$searchInput.focus()
+
+		@$searchInput
 			.on("keyup", @_handleSearch)
 			.focus()
 

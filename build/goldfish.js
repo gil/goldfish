@@ -133,10 +133,14 @@ Goldfish = (function() {
   };
 
   Goldfish.start = function() {
+    var _this = this;
     this.listManager = new ListManager();
     this.listManager.loadLists();
     this._readElements();
-    return this.$searchInput.on("keydown", this._handleKeys).on("keyup", this._handleSearch).focus();
+    $(document).on("keydown", this._handleKeys).on("keydown", function(e) {
+      return _this.$searchInput.focus();
+    });
+    return this.$searchInput.on("keyup", this._handleSearch).focus();
   };
 
   Goldfish._handleKeys = function(e) {
