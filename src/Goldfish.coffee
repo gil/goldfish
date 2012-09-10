@@ -44,7 +44,7 @@ class Goldfish
 			when 38 # key up
 				@_keyboardNavigate(e, "prev")
 			when 13 # enter key
-				@_openActiveEntry()
+				@_openActiveRow()
 			else
 				# Continue to keyup handler
 				return
@@ -61,35 +61,35 @@ class Goldfish
 		jumpGroup = e.ctrlKey or e.metaKey
 		nodeToSelect = if direction is "next" or jumpGroup then "first" else "last"
 
-		# Remove selection from active entry
-		currentActive = $(".active-entry").removeClass("active-entry")
+		# Remove selection from active row
+		currentActive = $(".active-row").removeClass("active-row")
 		nextActive = null
 
 		if currentActive.length > 0
 
 			# Get next/previous entry
-			nextActive = currentActive[direction](".entry-row")
+			nextActive = currentActive[direction](".entry-row, .list-row")
 
 			# No more on current group? Get from next/previous group
 			if jumpGroup or nextActive.length is 0
 				nextActive = currentActive.parents(".group-row")[direction](".group-row").find(".entry-row")[nodeToSelect]()
 
 			# Set as active
-			nextActive.addClass("active-entry")
+			nextActive.addClass("active-row")
 
 		else
 			# No entry currently active, so activate first/last
-			nextActive = $(".entry-row")[nodeToSelect]().addClass("active-entry")
+			nextActive = $(".entry-row, .list-row")[nodeToSelect]().addClass("active-row")
 
 		@_scrollToActive( nextActive )
 
 	# Scroll to make active item visible
-	@_scrollToActive: (activeEntry) ->
+	@_scrollToActive: (activeRow) ->
 
-		if activeEntry.length > 0
+		if activeRow.length > 0
 
-			activeTop = activeEntry.offset().top
-			activeHeight = activeEntry.height()
+			activeTop = activeRow.offset().top
+			activeHeight = activeRow.height()
 			windowHeight = $(window).height()
 			bodyScroll = $('body').scrollTop()
 
@@ -105,12 +105,12 @@ class Goldfish
 				scrollTop: bodyScroll
 			}, 300)
 
-	# Open active entry, when there is a URL to open
-	@_openActiveEntry: ->
-		activeEntryData = $(".active-entry").data("entry")
+	# Open active row, when there is a open callback
+	@_openActiveRow: ->
+		openCallback = $(".active-row").data("openCallback")
 
-		if activeEntryData and activeEntryData.url
-			window.open activeEntryData.url, "_blank"
+		if openCallback
+			openCallback()
 
 	# Remove all lists, groups and entries
 	@_clearScreen: ->
@@ -118,49 +118,54 @@ class Goldfish
 
 	# Handle search on text input
 	@_handleSearch: (e) =>
-		searchText = @$searchInput.val().trim()
-
-		if searchText isnt ""
-			@_search searchText
-		else
-			@_renderLists()
-
-	# Do search
-	@_search: (searchText) ->
 		if not @preventSearch
 
-			@_clearScreen()
+			searchText = @$searchInput.val().trim()
 
-			searchFilters = searchText.split(" ")
-			highlighter = @_getHighlighter( searchFilters )
-
-			groupTemplate = _.template( $("#group-template").html() )
-			entryTemplate = _.template( $("#entry-template").html() )
-
-			for group in @listManager.search( searchFilters )
-				groupEl = $( groupTemplate({
-								group: group,
-								highlighter: highlighter
-							}) )
-
-				for entry in group.entries
-					$( entryTemplate({
-						entry: entry,
-						highlighter: highlighter
-					}) )
-					.data( "entry", entry )
-					.appendTo( groupEl )
-
-				$(document.body).append( groupEl )
-
-			$(".entry-row").on "click", (e) ->
-				url = $(e.currentTarget).data("entry").url
-
-				if url
-					window.open url, "_blank"
+			if searchText isnt ""
+				@_search searchText
+			else
+				@_renderLists()
 
 		else
 			@preventSearch = false
+
+	# Do search
+	@_search: (searchText) ->
+		@_clearScreen()
+
+		searchFilters = searchText.split(" ")
+		highlighter = @_getHighlighter( searchFilters )
+
+		groupTemplate = _.template( $("#group-template").html() )
+		entryTemplate = _.template( $("#entry-template").html() )
+
+		for group in @listManager.search( searchFilters )
+
+			# Render group
+			groupEl = $( groupTemplate({
+							group: group,
+							highlighter: highlighter
+						}) )
+
+			for entry in group.entries
+
+				# Function to open entry's URL
+				openCallback = (entry) ->
+					->
+						if entry.url
+							window.open entry.url, "_blank"
+
+				# Render entry
+				$( entryTemplate({
+							entry: entry,
+							highlighter: highlighter
+						}) )
+					.data( "openCallback", openCallback(entry) )
+					.on( "click", openCallback(entry) )
+					.appendTo( groupEl )
+
+			$(document.body).append( groupEl )
 
 	# Render lists data on screen
 	@_renderLists: ->
@@ -168,11 +173,21 @@ class Goldfish
 		listTemplate = _.template( $("#list-template").html() )
 
 		for list in @listManager.listsData
+
+			# Function to open add list name to the search
+			openCallback = (list) =>
+				=>
+					@$searchInput.val( list.data.name + " " ).focus()
+					@_handleSearch()
+
+			# Render list row
 			listEl = $( listTemplate({
-				name: list.data.name,
-				entryCount: list.entryCount,
-				groupCount: list.groupCount
-			}) )
+								name: list.data.name,
+								entryCount: list.entryCount,
+								groupCount: list.groupCount
+							}) )
+						.data( "openCallback", openCallback(list) )
+						.on( "click", openCallback(list) )
 
 			$(document.body).append( listEl )
 

@@ -150,7 +150,7 @@ Goldfish = (function() {
         Goldfish._keyboardNavigate(e, "prev");
         break;
       case 13:
-        Goldfish._openActiveEntry();
+        Goldfish._openActiveRow();
         break;
       default:
         return;
@@ -165,25 +165,25 @@ Goldfish = (function() {
     var currentActive, jumpGroup, nextActive, nodeToSelect;
     jumpGroup = e.ctrlKey || e.metaKey;
     nodeToSelect = direction === "next" || jumpGroup ? "first" : "last";
-    currentActive = $(".active-entry").removeClass("active-entry");
+    currentActive = $(".active-row").removeClass("active-row");
     nextActive = null;
     if (currentActive.length > 0) {
-      nextActive = currentActive[direction](".entry-row");
+      nextActive = currentActive[direction](".entry-row, .list-row");
       if (jumpGroup || nextActive.length === 0) {
         nextActive = currentActive.parents(".group-row")[direction](".group-row").find(".entry-row")[nodeToSelect]();
       }
-      nextActive.addClass("active-entry");
+      nextActive.addClass("active-row");
     } else {
-      nextActive = $(".entry-row")[nodeToSelect]().addClass("active-entry");
+      nextActive = $(".entry-row, .list-row")[nodeToSelect]().addClass("active-row");
     }
     return this._scrollToActive(nextActive);
   };
 
-  Goldfish._scrollToActive = function(activeEntry) {
+  Goldfish._scrollToActive = function(activeRow) {
     var activeHeight, activeTop, bodyScroll, windowHeight;
-    if (activeEntry.length > 0) {
-      activeTop = activeEntry.offset().top;
-      activeHeight = activeEntry.height();
+    if (activeRow.length > 0) {
+      activeTop = activeRow.offset().top;
+      activeHeight = activeRow.height();
       windowHeight = $(window).height();
       bodyScroll = $('body').scrollTop();
       if (activeTop + activeHeight > windowHeight + bodyScroll) {
@@ -197,11 +197,11 @@ Goldfish = (function() {
     }
   };
 
-  Goldfish._openActiveEntry = function() {
-    var activeEntryData;
-    activeEntryData = $(".active-entry").data("entry");
-    if (activeEntryData && activeEntryData.url) {
-      return window.open(activeEntryData.url, "_blank");
+  Goldfish._openActiveRow = function() {
+    var openCallback;
+    openCallback = $(".active-row").data("openCallback");
+    if (openCallback) {
+      return openCallback();
     }
   };
 
@@ -211,64 +211,73 @@ Goldfish = (function() {
 
   Goldfish._handleSearch = function(e) {
     var searchText;
-    searchText = Goldfish.$searchInput.val().trim();
-    if (searchText !== "") {
-      return Goldfish._search(searchText);
+    if (!Goldfish.preventSearch) {
+      searchText = Goldfish.$searchInput.val().trim();
+      if (searchText !== "") {
+        return Goldfish._search(searchText);
+      } else {
+        return Goldfish._renderLists();
+      }
     } else {
-      return Goldfish._renderLists();
+      return Goldfish.preventSearch = false;
     }
   };
 
   Goldfish._search = function(searchText) {
-    var entry, entryTemplate, group, groupEl, groupTemplate, highlighter, searchFilters, _i, _j, _len, _len1, _ref, _ref1;
-    if (!this.preventSearch) {
-      this._clearScreen();
-      searchFilters = searchText.split(" ");
-      highlighter = this._getHighlighter(searchFilters);
-      groupTemplate = _.template($("#group-template").html());
-      entryTemplate = _.template($("#entry-template").html());
-      _ref = this.listManager.search(searchFilters);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        group = _ref[_i];
-        groupEl = $(groupTemplate({
-          group: group,
+    var entry, entryTemplate, group, groupEl, groupTemplate, highlighter, openCallback, searchFilters, _i, _j, _len, _len1, _ref, _ref1, _results;
+    this._clearScreen();
+    searchFilters = searchText.split(" ");
+    highlighter = this._getHighlighter(searchFilters);
+    groupTemplate = _.template($("#group-template").html());
+    entryTemplate = _.template($("#entry-template").html());
+    _ref = this.listManager.search(searchFilters);
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      group = _ref[_i];
+      groupEl = $(groupTemplate({
+        group: group,
+        highlighter: highlighter
+      }));
+      _ref1 = group.entries;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        entry = _ref1[_j];
+        openCallback = function(entry) {
+          return function() {
+            if (entry.url) {
+              return window.open(entry.url, "_blank");
+            }
+          };
+        };
+        $(entryTemplate({
+          entry: entry,
           highlighter: highlighter
-        }));
-        _ref1 = group.entries;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          entry = _ref1[_j];
-          $(entryTemplate({
-            entry: entry,
-            highlighter: highlighter
-          })).data("entry", entry).appendTo(groupEl);
-        }
-        $(document.body).append(groupEl);
+        })).data("openCallback", openCallback(entry)).on("click", openCallback(entry)).appendTo(groupEl);
       }
-      return $(".entry-row").on("click", function(e) {
-        var url;
-        url = $(e.currentTarget).data("entry").url;
-        if (url) {
-          return window.open(url, "_blank");
-        }
-      });
-    } else {
-      return this.preventSearch = false;
+      _results.push($(document.body).append(groupEl));
     }
+    return _results;
   };
 
   Goldfish._renderLists = function() {
-    var list, listEl, listTemplate, _i, _len, _ref, _results;
+    var list, listEl, listTemplate, openCallback, _i, _len, _ref, _results,
+      _this = this;
     this._clearScreen();
     listTemplate = _.template($("#list-template").html());
     _ref = this.listManager.listsData;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       list = _ref[_i];
+      openCallback = function(list) {
+        return function() {
+          _this.$searchInput.val(list.data.name + " ").focus();
+          return _this._handleSearch();
+        };
+      };
       listEl = $(listTemplate({
         name: list.data.name,
         entryCount: list.entryCount,
         groupCount: list.groupCount
-      }));
+      })).data("openCallback", openCallback(list)).on("click", openCallback(list));
       _results.push($(document.body).append(listEl));
     }
     return _results;

@@ -18,6 +18,7 @@ body {
 /* List */
 
 .list-row {
+	cursor: pointer;
 	color: #333333;
 	background-color: #EAEAEA;
 	font-size: 17px;
@@ -60,8 +61,8 @@ body {
 	padding: 5px;
 }
 
-.entry-row:hover, .active-entry {
-	background-color: #EAEAEA;
+.entry-row:hover, .list-row:hover, .active-row {
+	background-color: #E0E0E0;
 }
 
 .entry-name {
