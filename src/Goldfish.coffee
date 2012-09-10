@@ -74,12 +74,12 @@ class Goldfish
 			if jumpGroup or nextActive.length is 0
 				nextActive = currentActive.parents(".group-row")[direction](".group-row").find(".entry-row")[nodeToSelect]()
 
-			# Set as active
-			nextActive.addClass("active-row")
+		# No entry? So get first/last
+		if not nextActive or nextActive.length is 0
+			nextActive = $(".entry-row, .list-row")[nodeToSelect]()
 
-		else
-			# No entry currently active, so activate first/last
-			nextActive = $(".entry-row, .list-row")[nodeToSelect]().addClass("active-row")
+		# Set as active
+		nextActive.addClass("active-row")
 
 		@_scrollToActive( nextActive )
 

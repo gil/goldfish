@@ -172,10 +172,11 @@ Goldfish = (function() {
       if (jumpGroup || nextActive.length === 0) {
         nextActive = currentActive.parents(".group-row")[direction](".group-row").find(".entry-row")[nodeToSelect]();
       }
-      nextActive.addClass("active-row");
-    } else {
-      nextActive = $(".entry-row, .list-row")[nodeToSelect]().addClass("active-row");
     }
+    if (!nextActive || nextActive.length === 0) {
+      nextActive = $(".entry-row, .list-row")[nodeToSelect]();
+    }
+    nextActive.addClass("active-row");
     return this._scrollToActive(nextActive);
   };
 
