@@ -7,6 +7,10 @@ body {
 	margin: 30px;
 }
 
+code {
+	font-family: 'Courier New', monospace;
+}
+
 /* Search */
 
 .search-input {

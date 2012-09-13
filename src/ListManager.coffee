@@ -8,7 +8,7 @@ class ListManager
 		@defaultLists = amplify.store("lists")
 
 		if not @defaultLists
-			@defaultLists = ["jquery", "underscore", "backbone", "jasmine", "regexp"]
+			@defaultLists = ["jquery", "underscore", "backbone", "html5", "jasmine", "regexp"]
 			amplify.store( "lists", @defaultLists )
 
 	# Load all lists
