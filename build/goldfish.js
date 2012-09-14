@@ -1,5 +1,5 @@
 /*
-* Goldfish v0.0.1 - 2012-09-13 - https://github.com/gil/goldfish
+* Goldfish v0.0.1 - 2012-09-14 - https://github.com/gil/goldfish
 * by André Gil (http://andregil.net/)
 *
 * Licensed under:
@@ -68,11 +68,7 @@ ListManager = (function() {
 
   function ListManager() {
     this.listsData = [];
-    this.defaultLists = amplify.store("lists");
-    if (!this.defaultLists) {
-      this.defaultLists = ["jquery", "underscore", "backbone", "html5", "css", "jasmine", "regexp"];
-      amplify.store("lists", this.defaultLists);
-    }
+    this.defaultLists = ["jquery", "underscore", "backbone", "html5", "css", "jasmine", "regexp"];
   }
 
   ListManager.prototype.loadLists = function() {
