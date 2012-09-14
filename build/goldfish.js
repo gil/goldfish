@@ -70,7 +70,7 @@ ListManager = (function() {
     this.listsData = [];
     this.defaultLists = amplify.store("lists");
     if (!this.defaultLists) {
-      this.defaultLists = ["jquery", "underscore", "backbone", "html5", "jasmine", "regexp"];
+      this.defaultLists = ["jquery", "underscore", "backbone", "html5", "css", "jasmine", "regexp"];
       amplify.store("lists", this.defaultLists);
     }
   }
