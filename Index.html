@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Goldfish</title>
+
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="initial-scale=1">
+		<meta name="google" value="notranslate" />
+
+		<link href="vendor/normalize.css" rel="stylesheet" type="text/css" />
+		<link href="goldfish.css" rel="stylesheet" type="text/css" />
+
+		<script id="list-template" type="text/html">
+			<div class="list-row">
+				<h3 class="list-name"><%= name %></h3>
+				<p class="list-description"><%= entryCount %> entries in <%= groupCount %> categories.</p>
+			</div>
+		</script>
+
+		<script id="group-template" type="text/html">
+			<div class="group-row">
+				<h2 class="group-label"><%= highlighter( group.list.name ) %> :: <%= highlighter( group.name ) %></h2>
+			</div>
+		</script>
+
+		<script id="entry-template" type="text/html">
+			<div class="entry-row">
+				<h3 class="entry-name"><%= highlighter( entry.name ) %></h3>
+				<p class="entry-description"><%= highlighter( entry.description ) %></p>
+			</div>
+		</script>
+
+	</head>
+	<body>
+
+		<input class="search-input" />
+
+		<script src="vendor/jquery-1.8.1.min.js"></script>
+		<script src="vendor/underscore-1.3.3.min.js"></script>
+		<script src="vendor/amplify.store.min.js"></script>
+		<script src="goldfish.js"></script>
+
+	</body>
+</html>
