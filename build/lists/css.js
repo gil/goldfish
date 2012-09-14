@@ -1,4 +1,4 @@
-// List extracted from: http://cssvalues.com/
+// List extracted from: http://cssvalues.com/ and http://www.w3.org/TR/CSS/
 Goldfish.addList({
 	"name": "CSS",
 	"groups": [
@@ -1064,6 +1064,201 @@ Goldfish.addList({
 					"name": "word-wrap",
 					"description": "<ul> <li><code class=\"initial\">normal</code></li> <li><code>break-word</code></li> </ul> <p>This property has been replaced by overflow-wrap, but all future browsers will support it as an alternate syntax.</p> <p></p>",
 					"url": "http://cssvalues.com/#word-wrap"
+				}
+			]
+		},
+		{
+			"name": "Selectors",
+			"entries": [
+				{
+					"name": "*",
+					"description": "any element",
+					"url": "http://www.w3.org/TR/css3-selectors/#universal-selector"
+				},
+				{
+					"name": "E",
+					"description": "an element of type E",
+					"url": "http://www.w3.org/TR/css3-selectors/#type-selectors"
+				},
+				{
+					"name": "E[foo]",
+					"description": "an E element with a \"foo\" attribute",
+					"url": "http://www.w3.org/TR/css3-selectors/#attribute-selectors"
+				},
+				{
+					"name": "E[foo=\"bar\"]",
+					"description": "an E element whose \"foo\" attribute value is exactly equal to \"bar\"",
+					"url": "http://www.w3.org/TR/css3-selectors/#attribute-selectors"
+				},
+				{
+					"name": "E[foo~=\"bar\"]",
+					"description": "an E element whose \"foo\" attribute value is a list of whitespace-separated values, one of which is exactly equal to \"bar\"",
+					"url": "http://www.w3.org/TR/css3-selectors/#attribute-selectors"
+				},
+				{
+					"name": "E[foo^=\"bar\"]",
+					"description": "an E element whose \"foo\" attribute value begins exactly with the string \"bar\"",
+					"url": "http://www.w3.org/TR/css3-selectors/#attribute-selectors"
+				},
+				{
+					"name": "E[foo$=\"bar\"]",
+					"description": "an E element whose \"foo\" attribute value ends exactly with the string \"bar\"",
+					"url": "http://www.w3.org/TR/css3-selectors/#attribute-selectors"
+				},
+				{
+					"name": "E[foo*=\"bar\"]",
+					"description": "an E element whose \"foo\" attribute value contains the substring \"bar\"",
+					"url": "http://www.w3.org/TR/css3-selectors/#attribute-selectors"
+				},
+				{
+					"name": "E[foo|=\"en\"]",
+					"description": "an E element whose \"foo\" attribute has a hyphen-separated list of values beginning (from the left) with \"en\"",
+					"url": "http://www.w3.org/TR/css3-selectors/#attribute-selectors"
+				},
+				{
+					"name": "E:root",
+					"description": "an E element, root of the document",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:nth-child(n)",
+					"description": "an E element, the n-th child of its parent",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:nth-last-child(n)",
+					"description": "an E element, the n-th child of its parent, counting from the last one",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:nth-of-type(n)",
+					"description": "an E element, the n-th sibling of its type",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:nth-last-of-type(n)",
+					"description": "an E element, the n-th sibling of its type, counting from the last one",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:first-child",
+					"description": "an E element, first child of its parent",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:last-child",
+					"description": "an E element, last child of its parent",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:first-of-type",
+					"description": "an E element, first sibling of its type",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:last-of-type",
+					"description": "an E element, last sibling of its type",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:only-child",
+					"description": "an E element, only child of its parent",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:only-of-type",
+					"description": "an E element, only sibling of its type",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:empty",
+					"description": "an E element that has no children (including text nodes)",
+					"url": "http://www.w3.org/TR/css3-selectors/#structural-pseudos"
+				},
+				{
+					"name": "E:link E:visited",
+					"description": "an E element being the source anchor of a hyperlink of which the target is not yet visited (:link) or already visited (:visited)",
+					"url": "http://www.w3.org/TR/css3-selectors/#link"
+				},
+				{
+					"name": "E:active E:hover E:focus",
+					"description": "an E element during certain user actions",
+					"url": "http://www.w3.org/TR/css3-selectors/#useraction-pseudos"
+				},
+				{
+					"name": "E:target",
+					"description": "an E element being the target of the referring URI",
+					"url": "http://www.w3.org/TR/css3-selectors/#target-pseudo"
+				},
+				{
+					"name": "E:lang(fr)",
+					"description": "an element of type E in language \"fr\" (the document language specifies how language is determined)",
+					"url": "http://www.w3.org/TR/css3-selectors/#lang-pseudo"
+				},
+				{
+					"name": "E:enabled E:disabled",
+					"description": "a user interface element E which is enabled or disabled",
+					"url": "http://www.w3.org/TR/css3-selectors/#UIstates"
+				},
+				{
+					"name": "E:checked",
+					"description": "a user interface element E which is checked (for instance a radio-button or checkbox)",
+					"url": "http://www.w3.org/TR/css3-selectors/#UIstates"
+				},
+				{
+					"name": "E::first-line",
+					"description": "the first formatted line of an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#first-line"
+				},
+				{
+					"name": "E::first-letter",
+					"description": "the first formatted letter of an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#first-letter"
+				},
+				{
+					"name": "E::before",
+					"description": "generated content before an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#gen-content"
+				},
+				{
+					"name": "E::after",
+					"description": "generated content after an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#gen-content"
+				},
+				{
+					"name": "E.warning",
+					"description": "an E element whose class is \"warning\" (the document language specifies how class is determined).",
+					"url": "http://www.w3.org/TR/css3-selectors/#class-html"
+				},
+				{
+					"name": "E#myid",
+					"description": "an E element with ID equal to \"myid\".",
+					"url": "http://www.w3.org/TR/css3-selectors/#id-selectors"
+				},
+				{
+					"name": "E:not(s)",
+					"description": "an E element that does not match simple selector s",
+					"url": "http://www.w3.org/TR/css3-selectors/#negation"
+				},
+				{
+					"name": "E F",
+					"description": "an F element descendant of an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#descendant-combinators"
+				},
+				{
+					"name": "E > F",
+					"description": "an F element child of an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#child-combinators"
+				},
+				{
+					"name": "E + F",
+					"description": "an F element immediately preceded by an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#adjacent-sibling-combinators"
+				},
+				{
+					"name": "E ~ F",
+					"description": "an F element preceded by an E element",
+					"url": "http://www.w3.org/TR/css3-selectors/#general-sibling-combinators"
 				}
 			]
 		}
