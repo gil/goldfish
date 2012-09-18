@@ -1,5 +1,5 @@
 /*
-* Goldfish v0.0.1 - 2012-09-14 - https://github.com/gil/goldfish
+* Goldfish v0.0.1 - 2012-09-18 - https://github.com/gil/goldfish
 * by André Gil (http://andregil.net/)
 *
 * Licensed under:
@@ -62,22 +62,30 @@ List = (function() {
 
 })();
 
-var ListManager;
+var ListManager,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 ListManager = (function() {
 
   function ListManager() {
+    this.manageLists = __bind(this.manageLists, this);
     this.listsData = [];
-    this.defaultLists = ["jquery", "underscore", "backbone", "html5", "css", "jasmine", "regexp"];
+    this.lists = amplify.store("lists");
+    if (!this.lists) {
+      this.lists = _.map(["jquery", "underscore", "backbone", "html5", "css", "jasmine", "regexp"], function(listName) {
+        return "lists/" + listName + ".js";
+      });
+      amplify.store("lists", this.lists);
+    }
   }
 
   ListManager.prototype.loadLists = function() {
-    var list, script, _i, _len, _ref, _results;
-    _ref = this.defaultLists;
+    var listUrl, script, _i, _len, _ref, _results;
+    _ref = this.lists;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      list = _ref[_i];
-      script = $("<script/>").attr("src", "lists/" + list + ".js");
+      listUrl = _ref[_i];
+      script = $("<script/>").attr("src", listUrl);
       _results.push($("head")[0].appendChild(script[0]));
     }
     return _results;
@@ -98,6 +106,26 @@ ListManager = (function() {
     return groups;
   };
 
+  ListManager.prototype.manageLists = function() {
+    var manageListsTemplate;
+    $(".main").hide();
+    manageListsTemplate = _.template($("#manage-lists").html());
+    manageListsTemplate = $(manageListsTemplate({
+      lists: this.lists.join("\n")
+    }));
+    return manageListsTemplate.find(".save-button").on("click", this.saveLists).end().find(".cancel-button").on("click", this.showMain).end().appendTo($("body"));
+  };
+
+  ListManager.prototype.saveLists = function() {
+    amplify.store("lists", $(".manage-lists .lists").val().trim().split(/[\n\t\r]+/));
+    return location.reload();
+  };
+
+  ListManager.prototype.showMain = function() {
+    $(".manage-lists").remove();
+    return $(".main").show();
+  };
+
   return ListManager;
 
 })();
@@ -109,7 +137,8 @@ Goldfish = (function() {
   function Goldfish() {}
 
   Goldfish.elements = {
-    searchInput: ".search-input"
+    searchInput: ".search-input",
+    main: ".main"
   };
 
   Goldfish.preventSearch = false;
@@ -141,24 +170,26 @@ Goldfish = (function() {
 
   Goldfish._handleKeys = function(e) {
     var key;
-    key = e.keyCode || e.which;
-    switch (key) {
-      case 40:
-        Goldfish._keyboardNavigate(e, "next");
-        break;
-      case 38:
-        Goldfish._keyboardNavigate(e, "prev");
-        break;
-      case 13:
-        Goldfish._openActiveRow();
-        break;
-      default:
-        return;
+    if (Goldfish.$main.is(":visible")) {
+      key = e.keyCode || e.which;
+      switch (key) {
+        case 40:
+          Goldfish._keyboardNavigate(e, "next");
+          break;
+        case 38:
+          Goldfish._keyboardNavigate(e, "prev");
+          break;
+        case 13:
+          Goldfish._openActiveRow();
+          break;
+        default:
+          return;
+      }
+      Goldfish.preventSearch = true;
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
     }
-    Goldfish.preventSearch = true;
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
   };
 
   Goldfish._keyboardNavigate = function(e, direction) {
@@ -207,7 +238,7 @@ Goldfish = (function() {
   };
 
   Goldfish._clearScreen = function() {
-    return $(".group-row, .list-row").remove();
+    return $(".group-row, .list-row, .manage-lists-button").remove();
   };
 
   Goldfish._handleSearch = function(e) {
@@ -254,18 +285,17 @@ Goldfish = (function() {
           highlighter: highlighter
         })).data("openCallback", openCallback(entry)).on("click", openCallback(entry)).appendTo(groupEl);
       }
-      _results.push($(document.body).append(groupEl));
+      _results.push(this.$main.append(groupEl));
     }
     return _results;
   };
 
   Goldfish._renderLists = function() {
-    var list, listEl, listTemplate, openCallback, _i, _len, _ref, _results,
+    var list, listEl, listTemplate, manageLists, openCallback, _i, _len, _ref,
       _this = this;
     this._clearScreen();
     listTemplate = _.template($("#list-template").html());
     _ref = this.listManager.listsData;
-    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       list = _ref[_i];
       openCallback = function(list) {
@@ -279,9 +309,9 @@ Goldfish = (function() {
         entryCount: list.entryCount,
         groupCount: list.groupCount
       })).data("openCallback", openCallback(list)).on("click", openCallback(list));
-      _results.push($(document.body).append(listEl));
+      this.$main.append(listEl);
     }
-    return _results;
+    return manageLists = $("<a />").html("Manage Lists").addClass("manage-lists-button").on("click", this.listManager.manageLists).appendTo(this.$main);
   };
 
   Goldfish._getHighlighter = function(filters) {

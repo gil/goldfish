@@ -38,6 +38,26 @@ code {
 	margin: 0px;
 }
 
+/* Manage Lists */
+
+.manage-lists-button {
+	cursor: pointer;
+	color: #006699;
+	font-size: 13px;
+	float: right;
+}
+
+.manage-lists .lists {
+	width: 100%;
+	min-height: 300px;
+	border: 1px solid #E0E0E0;
+}
+
+.cancel-button, .save-button {
+	float: right;
+	margin-left: 5px;
+}
+
 /* Group */
 
 .group-row {

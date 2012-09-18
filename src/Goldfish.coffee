@@ -1,7 +1,8 @@
 class Goldfish
 
 	@elements = {
-		searchInput : ".search-input"
+		searchInput : ".search-input",
+		main : ".main"
 	}
 
 	@preventSearch = false
@@ -32,32 +33,27 @@ class Goldfish
 			.on("keyup", @_handleSearch)
 			.focus()
 
-		# TODO: Remove temporary auto search
-		# @$searchInput.val(" ");
-		# setTimeout =>
-		# 	@_search();
-		# , 300
-
 	# Handle keyboard navigation
 	@_handleKeys: (e) =>
-		key = e.keyCode or e.which
+		if @$main.is(":visible")
+			key = e.keyCode or e.which
 
-		switch key
-			when 40 # key down
-				@_keyboardNavigate(e, "next")
-			when 38 # key up
-				@_keyboardNavigate(e, "prev")
-			when 13 # enter key
-				@_openActiveRow()
-			else
-				# Continue to keyup handler
-				return
+			switch key
+				when 40 # key down
+					@_keyboardNavigate(e, "next")
+				when 38 # key up
+					@_keyboardNavigate(e, "prev")
+				when 13 # enter key
+					@_openActiveRow()
+				else
+					# Continue to keyup handler
+					return
 
-		# Prevent keyup handler
-		@preventSearch = true
-		e.preventDefault()
-		e.stopPropagation()
-		false
+			# Prevent keyup handler
+			@preventSearch = true
+			e.preventDefault()
+			e.stopPropagation()
+			false
 
 	# Select next/previous available entry
 	@_keyboardNavigate: (e, direction) ->
@@ -118,7 +114,7 @@ class Goldfish
 
 	# Remove all lists, groups and entries
 	@_clearScreen: ->
-		$(".group-row, .list-row").remove()
+		$(".group-row, .list-row, .manage-lists-button").remove()
 
 	# Handle search on text input
 	@_handleSearch: (e) =>
@@ -169,7 +165,7 @@ class Goldfish
 					.on( "click", openCallback(entry) )
 					.appendTo( groupEl )
 
-			$(document.body).append( groupEl )
+			@$main.append( groupEl )
 
 	# Render lists data on screen
 	@_renderLists: ->
@@ -193,7 +189,14 @@ class Goldfish
 						.data( "openCallback", openCallback(list) )
 						.on( "click", openCallback(list) )
 
-			$(document.body).append( listEl )
+			@$main.append( listEl )
+
+		# Manage lists button
+		manageLists = $( "<a />" )
+						.html( "Manage Lists" )
+						.addClass( "manage-lists-button" )
+						.on( "click", @listManager.manageLists )
+						.appendTo( @$main )
 
 	# Return a highlighter function, based on given filters
 	@_getHighlighter: (filters) ->
